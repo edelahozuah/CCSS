@@ -72,8 +72,38 @@ Para revocar un certificado, necesitas su **Número de Serie**.
 ## Guía de Ejercicios
 Para una guía paso a paso más detallada sobre los conceptos de PKI, consulta la [Guía de Ejercicios](./GUIA_EJERCICIOS.md).
 
-## Estructura de Directorios
-*   `bin/`: Contiene los binarios `step` y `step-ca`.
-*   `pki/`: Contiene la base de datos de la CA, configuración y claves.
-*   `scripts/`: Scripts de ayuda para las operaciones.
-*   `certs/`: Almacena los certificados emitidos.
+## Estructura Detallada del Directorio `pki/`
+
+El corazón de este escenario reside en el directorio `pki/`, que contiene todo el estado de la Autoridad de Certificación:
+
+*   **`pki/certs/`**: Almacena los certificados públicos de la propia infraestructura.
+    *   `root_ca.crt`: El certificado raíz (Root CA). Este es el que debes instalar en tus navegadores/sistemas para que confíen en todo lo emitido por esta PKI.
+    *   `intermediate_ca.crt`: La CA intermedia que realmente firma los certificados finales.
+*   **`pki/secrets/`**: **¡CRÍTICO!** Contiene las claves privadas.
+    *   `root_ca_key`: La clave privada de la raíz. En un entorno real, esta clave estaría offline y protegida físicamente.
+    *   `intermediate_ca_key`: La clave privada de la intermedia, usada por el servicio `step-ca` para firmar al vuelo.
+*   **`pki/config/`**: Configuración del servidor CA.
+    *   `ca.json`: Archivo principal de configuración. Define los provisionadores (quién puede pedir certificados), las direcciones de escucha, y las políticas.
+    *   `defaults.json`: Valores por defecto para la inicialización.
+*   **`pki/db/`**: Base de datos interna (BadgerDB) donde `step-ca` lleva el registro de los certificados emitidos y revocados.
+
+## Personalización del Escenario
+
+Si deseas adaptar este laboratorio para otros ejercicios, aquí tienes algunas pistas:
+
+### Cambiar la duración de los certificados
+Por defecto, `step-ca` emite certificados de corta duración (ej. 24 horas). Para cambiar esto, puedes modificar el archivo `pki/config/ca.json`. Busca la sección `claims` dentro de tu provisionador y añade o modifica:
+```json
+"claims": {
+    "maxTLSCertDuration": "168h",
+    "defaultTLSCertDuration": "24h"
+}
+```
+*(Nota: Necesitarás reiniciar la CA tras los cambios)*.
+
+### Añadir nuevos "Provisionadores"
+Actualmente, la CA está configurada con un provisionador tipo JWK (basado en contraseña). Puedes añadir soporte para OIDC (Google, Azure AD) o ACME (para usar con certbot) editando la lista `provisioners` en `ca.json`.
+
+### Resetear el entorno
+Si quieres empezar de cero (borrar toda la PKI y crear una nueva), simplemente elimina el directorio `pki/` y vuelve a ejecutar el script de setup (si dispones de uno) o inicializa manualmente con `step ca init`.
+
