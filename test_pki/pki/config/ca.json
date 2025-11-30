@@ -31,8 +31,23 @@
 					"y": "PJ7CVBQj4FSeu1E9pNq8nxhcZmkZkZD28gGrKgjELZA"
 				},
 				"encryptedKey": "eyJhbGciOiJQQkVTMi1IUzI1NitBMTI4S1ciLCJjdHkiOiJqd2sranNvbiIsImVuYyI6IkEyNTZHQ00iLCJwMmMiOjEwMDAwMCwicDJzIjoiclI1MThEVGZHSE5sdm5BQ1p6UUFBUSJ9.1ryTwCykAXVXcPdhTKyQciGMGUS5uqIzk3y_ipaZweHNr3un54vOXg.gVEXtixJfPhB5X3-.5bA5A_zW08J3fOvQbh1SHuovBCXkwWmguQvokui5xKyPX-FQDN2otz3V3-LM4eaN48Ks6ErLlN2nseEpUoJCS1Kooo5pdP3rLyRZ06feROj_Ag_PM6M5aBCiqVgmauslSw9VJeeSQvW01UwRf91MleWOSInJTsXHk3-A8BTcziNIQhDzAgCLcI1_YIi9LyUKOoum8_NwH78yeWfBLDkebf4DEe96AMoDXmQkuyIFBdKdVkzo9Zu33XOTBa_RP3aBkTxqXx3e1vCbOvsJt38FA9aF6xJeq0LsmM39enLTpa7kaz3aBI0vpC37_oZTUwnPiGLmHkZXvEP04IkYWdY.AgVeEYNdLaNp1XHYQxZM4w"
+			},
+			{
+				"type": "ACME",
+				"name": "acme",
+				"claims": {
+					"enableSSHCA": true,
+					"disableRenewal": false,
+					"allowRenewalAfterExpiry": false
+				},
+				"options": {
+					"x509": {},
+					"ssh": {}
+				}
 			}
-		]
+		],
+		"template": {},
+		"backdate": "1m0s"
 	},
 	"tls": {
 		"cipherSuites": [
@@ -42,5 +57,6 @@
 		"minVersion": 1.2,
 		"maxVersion": 1.3,
 		"renegotiation": false
-	}
+	},
+	"commonName": "Step Online CA"
 }

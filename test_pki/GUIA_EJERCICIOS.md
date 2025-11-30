@@ -96,10 +96,35 @@ Y de que la CA esté en ejecución (en otra terminal):
 
 ---
 
+## Ejercicio 5: Automatización con ACME
+
+**Objetivo:** Utilizar el protocolo ACME (el mismo que usa Let's Encrypt) para obtener certificados de forma automatizada.
+
+1.  **Reinicia la CA:**
+    Para que la CA reconozca el nuevo provisionador ACME que hemos configurado, debes reiniciarla.
+    *   Ve a la terminal donde corre `./scripts/01_start_ca.sh`.
+    *   Presiona `Ctrl+C` para detenerla.
+    *   Vuelve a ejecutar `./scripts/01_start_ca.sh`.
+
+2.  **Solicita un certificado vía ACME:**
+    En lugar de usar una contraseña, usaremos el protocolo ACME. El cliente `step` simulará ser un cliente ACME (como certbot):
+    ```bash
+    ./bin/step ca certificate acme.ejemplo.local certs/acme.crt certs/acme.key --provisioner acme
+    ```
+    *Nota:* Observa que no te pide contraseña. La autenticación se realiza mediante "retos" (challenges) que la CA envía al cliente para verificar que controla el identificador.
+
+3.  **Inspecciona el certificado:**
+    ```bash
+    step certificate inspect certs/acme.crt
+    ```
+    Verifica que el emisor sigue siendo tu CA intermedia.
+
+---
+
 ## Conclusión
 
 Has recorrido el ciclo de vida completo de un certificado:
 1.  Confianza en la Raíz.
-2.  Emisión por una CA delegada.
+2.  Emisión por una CA delegada (Manual y ACME).
 3.  Uso y Verificación.
 4.  Revocación.
