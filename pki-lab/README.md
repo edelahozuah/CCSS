@@ -24,4 +24,3 @@ Para usarlo:
 
    docker exec -it pki-client bash
 
-El README detallado del laboratorio (enunciado largo) puedes pegarlo aquí o tenerlo aparte para el alumnado.
