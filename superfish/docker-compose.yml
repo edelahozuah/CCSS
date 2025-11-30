@@ -9,7 +9,8 @@ services:
       - ./attacker_index.html:/usr/share/nginx/html/index.html:ro
     networks:
       superfish_net:
-        ipv4_address: 172.20.0.10
+        aliases:
+          - secure.bank.com
 
   victim:
     build:
@@ -30,9 +31,6 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       superfish_net:
-        ipv4_address: 172.20.0.20
-    extra_hosts:
-      - "secure.bank.com:172.20.0.10"
     cap_add:
       - NET_ADMIN
       - SYS_PTRACE
@@ -42,6 +40,3 @@ services:
 networks:
   superfish_net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
