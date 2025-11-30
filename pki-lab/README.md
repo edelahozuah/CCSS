@@ -2,26 +2,40 @@
 
 Laboratorio completo para trabajar con infraestructuras de clave pública (PKI) en un entorno aislado con Docker.
 
-Este zip incluye la estructura base del escenario (`pki-lab/`) con:
-- `docker-compose.yml`
-- Configuración de Nginx fuerte y débil
-- DNS interno con CAA (CoreDNS)
-- Cliente de pruebas con openssl, curl, badkeys y Python
-- Carpeta para materiales del laboratorio (certificados, claves públicas, etc.)
+Este escenario viene **PRE-CONFIGURADO** para facilitar su uso inmediato.
 
-⚠️ Importante:
-- Las carpetas `db-data/` y `ejbca-persistent/` se rellenarán la primera vez que arranques EJBCA.
-- Los certificados y claves dentro de `nginx/certs`, `nginx-weak/certs` y `lab-material/keys` deberás generarlos y copiarlos tú siguiendo la guía que hemos comentado.
+## Contenido
+- `docker-compose.yml`: Orquestación de servicios.
+- **PKI Fuerte**: Certificados generados para `nginx.lab` (en `nginx/certs`).
+- **PKI Débil**: Certificados generados para `weak-nginx` (en `nginx-weak/certs`).
+- **EJBCA**: Servidor de CA completo (las bases de datos se inicializan al arrancar).
+- **Cliente**: Contenedor con herramientas (`openssl`, `curl`, `badkeys`).
 
-Para usarlo:
-1. Coloca este directorio `pki-lab/` donde quieras trabajar.
-2. Completa los certificados y materiales que falten.
-3. Ejecuta:
+## Instrucciones de Uso
 
-   docker compose up -d
+1.  **Arrancar el entorno:**
+    ```bash
+    docker compose up -d
+    ```
 
-4. Entra en el cliente:
+2.  **Acceder al cliente:**
+    ```bash
+    docker exec -it pki-client bash
+    ```
 
-   docker exec -it pki-client bash
+3.  **Realizar las pruebas:**
+    Desde el cliente, puedes probar la conexión a los servidores seguros y analizar la confianza de los certificados.
 
-El README detallado del laboratorio (enunciado largo) puedes pegarlo aquí o tenerlo aparte para el alumnado.
+    *   Conectar al sitio seguro:
+        ```bash
+        curl -v --cacert /lab/material/root_ca.crt https://nginx.lab:8444
+        ```
+    *   Conectar al sitio débil:
+        ```bash
+        curl -v --insecure https://weak-nginx:8445
+        ```
+
+## Notas
+- Los certificados han sido generados automáticamente por el script `setup_certs.sh`.
+- Si necesitas regenerarlos desde cero, puedes borrar el contenido de las carpetas `certs` y volver a ejecutar dicho script.
+
