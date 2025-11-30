@@ -1,0 +1,98 @@
+version: "3.9"
+
+networks:
+  pki-net:
+    driver: bridge
+
+services:
+  # --- Base de datos para EJBCA ---
+  ejbca-db:
+    image: mariadb:11
+    container_name: ejbca-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: changeit-root
+      MYSQL_DATABASE: ejbca
+      MYSQL_USER: ejbca
+      MYSQL_PASSWORD: changeit-db
+    volumes:
+      - ./db-data:/var/lib/mysql
+    networks:
+      - pki-net
+
+  # --- EJBCA Community (CA/RA/VA) ---
+  ejbca:
+    image: keyfactor/ejbca-ce:latest
+    platform: linux/amd64
+    container_name: ejbca
+    restart: unless-stopped
+    depends_on:
+      - ejbca-db
+      - dns-caa
+    environment:
+      - DATABASE_JDBC_URL=jdbc:mariadb://ejbca-db:3306/ejbca?characterEncoding=UTF-8
+      - DATABASE_USER=ejbca
+      - DATABASE_PASSWORD=changeit-db
+      - LOG_LEVEL_APP=INFO
+      - LOG_LEVEL_SERVER=INFO
+      - TLS_SETUP_ENABLED=simple   # ⬅️ modo sin cert de cliente
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - ./ejbca-persistent:/mnt/persistent
+      - ./ejbca-plugins:/opt/primekey/ejbca/plugins
+    networks:
+      - pki-net
+
+  # --- Servidor Nginx "fuerte" (cert emitido por LabSubCA) ---
+  nginx-tls:
+    image: nginx:alpine
+    container_name: nginx-tls
+    restart: unless-stopped
+    depends_on:
+      - ejbca
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    ports:
+      - "8444:443"    # HTTPS "bueno"
+    networks:
+      - pki-net
+
+  # --- Servidor Nginx "débil" (cert emitido por WeakRootCA) ---
+  nginx-weak:
+    image: nginx:alpine
+    container_name: nginx-weak
+    restart: unless-stopped
+    depends_on:
+      - ejbca
+    volumes:
+      - ./nginx-weak/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx-weak/certs:/etc/nginx/certs:ro
+    ports:
+      - "8445:443"    # HTTPS con CA débil
+    networks:
+      - pki-net
+
+  # --- DNS interno para CAA (CoreDNS) ---
+  dns-caa:
+    image: coredns/coredns:latest
+    container_name: dns-caa
+    command: ["-conf", "/etc/coredns/Corefile"]
+    volumes:
+      - ./dns-caa/Corefile:/etc/coredns/Corefile:ro
+      - ./dns-caa/db.lab.internal:/etc/coredns/db.lab.internal:ro
+    networks:
+      - pki-net
+
+  # --- Cliente de pruebas (openssl, curl, badkeys, python) ---
+  pki-client:
+    build: ./pki-client
+    container_name: pki-client
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    volumes:
+      - ./lab-material:/lab/material:ro
+    networks:
+      - pki-net

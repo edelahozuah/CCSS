@@ -1,0 +1,25 @@
+$ORIGIN lab.internal.
+$TTL 3600
+
+@   IN SOA ns1.lab.internal. hostmaster.lab.internal. (
+        2025010101 7200 3600 1209600 3600 )
+
+    IN NS  ns1.lab.internal.
+ns1 IN A   172.20.0.53
+
+; --- CAA de laboratorio ---
+
+; Dominio donde TU CA está autorizada
+allowed.lab.internal.    IN CAA 0 issue "labca.internal"
+
+; Dominio donde se PROHÍBE emitir
+forbidden.lab.internal.  IN CAA 0 issue ";"
+
+; Dominio sin CAA (no hay entradas): any.lab.internal.
+
+; Wildcard: solo permite wildcard a tu CA
+wild.lab.internal.       IN CAA 0 issuewild "labca.internal"
+wild.lab.internal.       IN CAA 0 issue ";"
+
+; Ejemplo iodef
+iodef.lab.internal.      IN CAA 0 iodef "mailto:ca-ops@lab.internal"

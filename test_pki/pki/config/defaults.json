@@ -1,0 +1,6 @@
+{
+	"ca-url": "https://localhost:8443",
+	"ca-config": "/Users/enrique/Docencia/CCSS/Escenarios/test_pki/pki/config/ca.json",
+	"fingerprint": "3e34a9e0d8136331531153746c0d9bbc35f69c9f20235bf5804cb0a217d159fd",
+	"root": "/Users/enrique/Docencia/CCSS/Escenarios/test_pki/pki/certs/root_ca.crt"
+}

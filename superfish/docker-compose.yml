@@ -1,0 +1,47 @@
+services:
+  target:
+    image: nginx:alpine
+    container_name: superfish-target
+    volumes:
+      - ./certs/real_site.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/real_site.key:/etc/nginx/ssl/server.key:ro
+      - ./attacker_config.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./attacker_index.html:/usr/share/nginx/html/index.html:ro
+    networks:
+      superfish_net:
+        ipv4_address: 172.20.0.10
+
+  victim:
+    build:
+      context: .
+      dockerfile: Dockerfile.victim
+    container_name: superfish-victim
+    volumes:
+      # Install Superfish CA as a trusted root
+      - ./certs/superfish.crt:/usr/local/share/ca-certificates/superfish.crt:ro
+      # Mount Encrypted Key
+      - ./certs/superfish.enc.key:/app/superfish.enc.key:ro
+      # Mount Service Script
+      - ./superfish_service.py:/app/superfish_service.py:ro
+    environment:
+      # Configure curl/tools to use the local proxy
+      - https_proxy=http://127.0.0.1:8080
+      - http_proxy=http://127.0.0.1:8080
+      - PYTHONUNBUFFERED=1
+    networks:
+      superfish_net:
+        ipv4_address: 172.20.0.20
+    extra_hosts:
+      - "secure.bank.com:172.20.0.10"
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+    # Start the python service wrapper
+    command: python3 /app/superfish_service.py
+
+networks:
+  superfish_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
