@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------
+  # 1. SERVIDOR LEGÍTIMO (INTRANET)
+  # -------------------------------------------------------
+  intranet-server:
+    image: nginx:alpine
+    container_name: omnitech-intranet
+    networks:
+      omnitech-net:
+        aliases:
+          - portal-ceo.omnitech.corp
+    volumes:
+      - ./config/intranet.conf:/etc/nginx/conf.d/default.conf
+      # Montamos los certificados legítimos generados por el script
+      - ./pki/public/intranet.crt:/etc/nginx/certs/intranet.crt
+      - ./pki/private/intranet.key:/etc/nginx/certs/intranet.key
+
+  # -------------------------------------------------------
+  # 2. SERVIDOR ATACANTE (CEBO)
+  # -------------------------------------------------------
+  # Este servidor Nginx servirá la página falsa.
+  # Lee los certificados desde el volumen compartido 'attacker_transfer'
+  attacker-server:
+    image: nginx:alpine
+    container_name: omnitech-attacker-nginx
+    networks:
+      omnitech-net:
+    volumes:
+      - ./config/attacker.conf:/etc/nginx/conf.d/default.conf
+      # Volumen MÁGICO: Aquí aparecerán los archivos que el alumno guarde en su escritorio
+      - attacker_transfer:/etc/nginx/certs
+    restart: always
+
+  # -------------------------------------------------------
+  # 3. ESCRITORIO DEL ATACANTE (XCA WEB) - Puerto 3001
+  # -------------------------------------------------------
+  # Aquí es donde el alumno trabaja. Contiene XCA preinstalado.
+  attacker-desktop:
+    build:
+      context: .
+      dockerfile: Dockerfile.attacker
+    container_name: omnitech-attacker-desktop
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      # Entrada: Los datos robados aparecen en el escritorio
+      - ./attacker_workspace/leaked_data:/config/Desktop/LEAKED_DATA
+      # Salida: Carpeta especial para enviar archivos al servidor Nginx atacante
+      - attacker_transfer:/config/Desktop/OUTPUT_TO_SERVER
+    ports:
+      - 3001:3000
+    shm_size: "1gb"
+    networks:
+      omnitech-net:
+
+  # -------------------------------------------------------
+  # 4. ESCRITORIO VÍCTIMA (FIREFOX) - Puerto 3000
+  # -------------------------------------------------------
+  # Simula el empleado que será engañado.
+  victim-desktop:
+    image: lscr.io/linuxserver/firefox:latest
+    container_name: omnitech-victim
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - TITLE=Victim PC (OmniTech)
+    ports:
+      - 3000:3000
+    shm_size: "1gb"
+    networks:
+      omnitech-net:
+    volumes:
+      # Inyectamos la Root CA para que confíe en la empresa
+      - ./pki/public/root-ca.crt:/usr/local/share/ca-certificates/root-ca.crt
+      # Configuramos Firefox para usar esa CA automáticamente
+      - ./config/policies.json:/usr/lib/firefox/distribution/policies.json
+    depends_on:
+      - intranet-server
+
+# Definición del volumen compartido interno (no se ve en el host)
+volumes:
+  attacker_transfer:
+
+# Definición de la red (automática para evitar conflictos)
+networks:
+  omnitech-net:

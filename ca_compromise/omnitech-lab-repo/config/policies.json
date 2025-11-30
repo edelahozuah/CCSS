@@ -1,0 +1,13 @@
+{
+  "policies": {
+    "Certificates": {
+      "ImportEnterpriseRoots": true,
+      "Install": [ "/usr/local/share/ca-certificates/root-ca.crt" ]
+    },
+    "DisableAppUpdate": true,
+    "Homepage": {
+      "StartPage": "homepage",
+      "URL": "https://portal-ceo.omnitech.corp"
+    }
+  }
+}

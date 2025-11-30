@@ -1,0 +1,7 @@
+# Ignorar claves privadas EXCEPTO las que son parte del escenario docente
+*.key
+*.pem
+!pki/private/intranet.key
+!pki/private/secure-ca.key
+!pki/private/legacy-ca.key
+!attacker_workspace/leaked_data/*.key
