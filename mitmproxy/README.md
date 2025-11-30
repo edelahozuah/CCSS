@@ -290,7 +290,7 @@ docker-compose down -v
 
 ## 📝 Licencia
 
-Este material es de uso educativo para el curso de Ciberseguridad y Cumplimiento de Sistemas.
+Este material es de uso educativo.
 
 ---
 
