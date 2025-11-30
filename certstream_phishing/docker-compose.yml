@@ -1,0 +1,15 @@
+services:
+  certstream:
+    image: 0rickyy0/certstream-server-go:latest # o la versión que fijes
+    volumes:
+      - ./certstream-config.yaml:/app/config.yaml:ro
+    expose:
+      - "8080"
+
+  phishing_catcher:
+    build:
+      context: ./phishing_catcher
+    volumes:
+      - ./phishing_catcher:/app
+    environment:
+      - CERTSTREAM_URL=ws://certstream:8080/full-stream
