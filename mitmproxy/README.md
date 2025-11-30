@@ -295,3 +295,7 @@ Este material es de uso educativo.
 ---
 
 **¿Preguntas o problemas?** Consulta la sección de [Troubleshooting](#troubleshooting) o revisa los logs de los contenedores.
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

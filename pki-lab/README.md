@@ -39,3 +39,7 @@ Este escenario viene **PRE-CONFIGURADO** para facilitar su uso inmediato.
 - Los certificados han sido generados automáticamente por el script `setup_certs.sh`.
 - Si necesitas regenerarlos desde cero, puedes borrar el contenido de las carpetas `certs` y volver a ejecutar dicho script.
 
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

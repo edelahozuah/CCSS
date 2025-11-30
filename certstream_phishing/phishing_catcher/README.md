@@ -92,3 +92,7 @@ GNU GPLv3
 Si esta herramienta te ha sido útil, siéntete libre de agradecer al autor original (x0rz).
 
 [![Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoff.ee/x0rz)
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

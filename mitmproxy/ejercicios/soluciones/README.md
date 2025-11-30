@@ -136,3 +136,7 @@ Para evaluar tu comprensión, intenta completar estos desafíos adicionales:
 ---
 
 **¿Dudas?** Consulta el README principal o revisa los logs de mitmproxy.
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

@@ -539,3 +539,7 @@ docker-compose logs -f
 ---
 
 **¡Buena suerte con los ejercicios!** 🚀
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

@@ -32,3 +32,7 @@ cd nombre_del_escenario
 # Ejemplo de ejecución común
 docker-compose up -d
 ```
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

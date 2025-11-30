@@ -58,3 +58,7 @@ El objetivo es demostrar cómo la pérdida de una clave privada de una Sub-CA pe
    3.  Edita `/etc/hosts` (usando `sudo nano /etc/hosts` o similar) y apunta el dominio `portal-ceo.omnitech.corp` a la IP que obtuviste en el paso anterior.
    4.  ¡Recarga Firefox y observa el candado verde!
 
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

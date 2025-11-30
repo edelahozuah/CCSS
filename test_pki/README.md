@@ -107,3 +107,7 @@ Actualmente, la CA está configurada con un provisionador tipo JWK (basado en co
 ### Resetear el entorno
 Si quieres empezar de cero (borrar toda la PKI y crear una nueva), simplemente elimina el directorio `pki/` y vuelve a ejecutar el script de setup (si dispones de uno) o inicializa manualmente con `step ca init`.
 
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*

@@ -46,3 +46,7 @@ Este escenario demuestra el peligro de:
 1.  Instalar CAs raíz de terceros en los almacenes de confianza.
 2.  Reutilizar claves privadas en múltiples dispositivos.
 3.  Proteger claves privadas con contraseñas débiles o hardcodeadas.
+
+
+---
+*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*
