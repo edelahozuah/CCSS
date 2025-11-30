@@ -1,0 +1,66 @@
+services:
+  mitmproxy:
+    image: mitmproxy/mitmproxy:latest
+    container_name: mitmproxy
+    command: >
+      mitmweb --listen-port 8080 --web-port 8081 --web-host 0.0.0.0 --set block_global=false --set web_password=${MITMPROXY_WEB_PASSWORD:-mitm1234} --set confdir=/home/mitmproxy/.mitmproxy
+    ports:
+      - "${MITMPROXY_PROXY_PORT:-8080}:8080" # Proxy HTTP/HTTPS
+      - "${MITMPROXY_WEB_PORT:-8081}:8081" # Interfaz web (mitmweb)
+    volumes:
+      # Certificados CA y configuración persistente
+      - ./mitmproxy-data:/home/mitmproxy/.mitmproxy
+      # Addons personalizados
+      - ./addons:/home/mitmproxy/.mitmproxy/addons:ro
+      # Directorio para capturas exportadas
+      - ./captures:/home/mitmproxy/captures
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+    networks:
+      - mitm-network
+    restart: unless-stopped
+
+  firefox:
+    image: jlesage/firefox
+    container_name: firefox-mitm
+    depends_on:
+      - mitmproxy
+    ports:
+      - "${FIREFOX_VNC_PORT:-5800}:5800" # Interfaz gráfica (noVNC)
+    volumes:
+      # Perfil de Firefox persistente (configuración de proxy y certificado CA)
+      - ./firefox-config:/config:rw
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - DISPLAY_WIDTH=1920
+      - DISPLAY_HEIGHT=1080
+      - VNC_PASSWORD=
+      # Configurar proxy automáticamente
+      - FF_OPEN_URL=http://mitmdump.it/
+    networks:
+      - mitm-network
+    shm_size: "${FIREFOX_SHM_SIZE:-2g}"
+    restart: unless-stopped
+  # Servidor web de prueba (opcional - descomentar para activar)
+  # test-server:
+  #   image: nginx:alpine
+  #   container_name: test-web-server
+  #   ports:
+  #     - "${TEST_SERVER_PORT:-8000}:80"
+  #   volumes:
+  #     - ./test-server:/usr/share/nginx/html:ro
+  #   networks:
+  #     - mitm-network
+  #   restart: unless-stopped
+
+networks:
+  mitm-network:
+    driver: bridge
+    name: mitmproxy-network
+
+volumes:
+  # Documentamos los volúmenes para claridad
+  mitmproxy-data:
+    driver: local
+  firefox-config:
+    driver: local

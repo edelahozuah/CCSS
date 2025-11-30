@@ -1,0 +1,49 @@
+# Git ignore file for mitmproxy scenario
+
+# Environment variables
+.env
+
+# Docker volumes and data
+firefox-config/profile/*
+firefox-config/cache2/*
+firefox-config/log/*
+!firefox-config/downloads/mitmproxy-ca-cert.pem
+
+# Captured flows and data
+*.flow
+*.har
+*.dump
+captures/
+logs/
+
+# Mitmproxy data (keep only the structure)
+# The CA certs will be regenerated on first run
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Keep directories
+!.gitkeep
