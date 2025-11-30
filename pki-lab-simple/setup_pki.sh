@@ -47,6 +47,32 @@ openssl x509 -req -in wrong.csr -CA interCA.crt -CAkey interCA.key -CAcreateseri
     -out wrong.crt -days 365 -sha256 -extfile w.ext
 cat wrong.crt interCA.crt > wrong_fullchain.pem
 
+# --- D. ESCENARIO CLAVE DÉBIL (forti.lab) ---
+# 1. Generamos una clave ridículamente pequeña (512 bits)
+#    Esto simula una clave antigua o generada en un dispositivo IoT limitado.
+openssl genrsa -out forti.key 512
+
+# 2. Generamos el certificado firmado por nuestra CA
+openssl req -new -key forti.key -out forti.csr -subj "/CN=forti.lab"
+echo "subjectAltName=DNS:forti.lab" > l.ext
+openssl x509 -req -in forti.csr -CA interCA.crt -CAkey interCA.key -CAcreateserial \
+    -out forti.crt -days 365 -sha256 -extfile l.ext
+cat forti.crt interCA.crt > forti_fullchain.pem
+
+# 3. SIMULACIÓN DE "BADKEYS" / DATABASE LEAK
+# Vamos a calcular el Hash del Módulo de esta clave (su "huella dactilar" matemática)
+# y guardaremos la Clave Privada en un archivo público simulando una filtración.
+
+MODULUS_HASH=$(openssl rsa -in forti.key -modulus -noout | openssl md5 | awk '{print $2}')
+
+# Creamos el archivo "darkweb_db.txt" en la carpeta compartida
+echo "--- BASE DE DATOS DE CLAVES COMPROMETIDAS (LEAK 2024) ---" > /shared_certs/darkweb_db.txt
+echo "ID: a1b2c3d4... [REDACTED]" >> /shared_certs/darkweb_db.txt
+echo "ID: $MODULUS_HASH KEY:" >> /shared_certs/darkweb_db.txt
+# Volcamos la clave privada en una sola línea (base64) para que sea "recuperable"
+cat forti.key | grep -v "-" | tr -d '\n' >> /shared_certs/darkweb_db.txt
+echo "" >> /shared_certs/darkweb_db.txt
+
 echo "--- [4/4] Configurando NGINX ---"
 cat > /etc/nginx/conf.d/default.conf <<EOF
 server {
@@ -70,5 +96,15 @@ server {
     ssl_certificate /etc/nginx/certs/roto.crt;
     ssl_certificate_key /etc/nginx/certs/roto.key;
     location / { return 200 '<h1>Error de Cadena</h1><p>Soy roto.lab y falta la CA intermedia.</p>'; }
+}
+
+server {
+    listen 443 ssl;
+    server_name forti.lab;
+    ssl_certificate /etc/nginx/certs/forti_fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/forti.key;
+    # Forzamos cifrados débiles para que sea más realista (opcional)
+    ssl_ciphers DEFAULT@SECLEVEL=0;
+    location / { return 200 '<h1>Legacy System</h1><p>Running on RSA 512 bit key.</p>'; }
 }
 EOF

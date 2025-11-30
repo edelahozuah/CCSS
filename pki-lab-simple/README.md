@@ -19,7 +19,7 @@ El servidor web está configurado para responder a los siguientes dominios, cada
 | :--- | :--- |
 | **`https://valido.lab`** | **Configuración Correcta**. El servidor envía el certificado final y la cadena completa (CA Intermedia). El navegador debería confiar en él si se importa la Root CA. |
 | **`https://roto.lab`** | **Cadena Incompleta**. El servidor envía solo su certificado final, olvidando la CA Intermedia. Esto provoca el error `SEC_ERROR_UNKNOWN_ISSUER` en muchos clientes. |
-| **`https://legacy.lab`** | **Clave Débil**. Utiliza una clave RSA de 512 bits, extremadamente insegura y fácil de romper. (Ver ejercicio `badkeys`). |
+| **`https://forti.lab`** | **Clave Débil**. Utiliza una clave RSA de 512 bits, extremadamente insegura y fácil de romper. (Ver ejercicio `badkeys`). |
 | **`https://banco-seguro.com`** | **Phishing / Nombre Incorrecto**. El servidor presenta un certificado válido pero para un dominio diferente, o autofirmado por una CA no confiable. |
 
 ## Instrucciones de Uso
