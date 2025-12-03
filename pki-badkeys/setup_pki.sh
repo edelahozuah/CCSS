@@ -85,6 +85,7 @@ server {
     ssl_ciphers DEFAULT@SECLEVEL=0;
     
     location / { 
+        add_header Content-Type text/html;
         return 200 '<h1>FortiGate Appliance</h1><p>System Online. Secure Connection Established.</p>'; 
     }
 }
