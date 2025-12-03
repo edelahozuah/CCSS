@@ -57,7 +57,7 @@ server {
     ssl_certificate /etc/nginx/certs/wrong_fullchain.pem;
     ssl_certificate_key /etc/nginx/certs/wrong.key;
     location / { 
-        add_header Content-Type text/html;
+        default_type text/html;
         return 200 '<h1>Sitio Interceptado / Phishing</h1><p>Certificado: banco-seguro.com</p>'; 
     }
 }
@@ -67,7 +67,7 @@ server {
     ssl_certificate /etc/nginx/certs/valido_fullchain.pem;
     ssl_certificate_key /etc/nginx/certs/valido.key;
     location / { 
-        add_header Content-Type text/html;
+        default_type text/html;
         return 200 '<h1>Correcto</h1><p>Soy valido.lab con cadena completa.</p>'; 
     }
 }
@@ -77,7 +77,7 @@ server {
     ssl_certificate /etc/nginx/certs/roto.crt;
     ssl_certificate_key /etc/nginx/certs/roto.key;
     location / { 
-        add_header Content-Type text/html;
+        default_type text/html;
         return 200 '<h1>Error de Cadena</h1><p>Soy roto.lab y falta la CA intermedia.</p>'; 
     }
 }
