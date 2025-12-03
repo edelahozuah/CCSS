@@ -47,19 +47,7 @@ openssl x509 -req -in wrong.csr -CA interCA.crt -CAkey interCA.key -CAcreateseri
     -out wrong.crt -days 365 -sha256 -extfile w.ext
 cat wrong.crt interCA.crt > wrong_fullchain.pem
 
-echo "--- [5/4] ESCENARIO REAL: BADKEY (Fortinet Leak) ---"
 
-# 1. Inyectamos la clave REAL comprometida (Fuente: badkeys/fortikeys/1003.key)
-# Esta clave es PÚBLICA en GitHub. Cualquiera la tiene.
-cat > forti_compromised.key <<EOF
------BEGIN RSA PRIVATE KEY-----
-MIICXQIBAAKBgQDSV4/sJqa/84JtKgM9rjoIcF0aC18+PxK/o+8j3kHOJzZPtWQM
-jMvj0PDmsvljo9eALFPCxV/KUE+60oT1zZmnO1Cyn/0D9swQeY2Q8daMoxv+rR5e
-Lq+FCNsq+O0u9OPO9gqOEk8bTPOWPC5CmnO08zJOvvfvZ9F6tQMq9O+WcQIDAQAB
-AoGAY/2iBv7iKy9Y28Hw2fK2T5/NMOQfFL8Oa0w0sD4cQZ/q84+63683VSCW46bT
-n01247CmnCGLv47OvbG26N6aX5XFkMv/TmfX5vM4lYCR5w3o8l6O42hmnlTptO6a
-gS4w+oHHy3w+zSsxVPOKPCqQcvdDvvVvv/PtOJ+U103jT8ECQQD1X06sX6p/s2gC
-m0K9+6Zt2rP/ToxuN24v1F5O4+OJM3i61zPPVQM+0Aoh1y6nCgDVB2vOIO5C6K20
 echo "--- [4/4] Configurando NGINX ---"
 cat > /etc/nginx/conf.d/default.conf <<EOF
 server {
