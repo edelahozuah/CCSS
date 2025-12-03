@@ -67,7 +67,7 @@ server {
     ssl_certificate /etc/nginx/certs/valido_fullchain.pem;
     ssl_certificate_key /etc/nginx/certs/valido.key;
     location / { 
-        default_type text/html;
+        add_header Content-Type text/html;
         return 200 '<h1>PKI Lab Badkeys</h1><p>Servidor por defecto.</p>'; 
     }
 }
@@ -77,7 +77,7 @@ server {
     ssl_certificate /etc/nginx/certs/valido_fullchain.pem;
     ssl_certificate_key /etc/nginx/certs/valido.key;
     location / { 
-        default_type text/html;
+        add_header Content-Type text/html;
         return 200 '<h1>Correcto</h1><p>Soy valido.lab con cadena completa.</p>'; 
     }
 }
@@ -91,7 +91,7 @@ server {
     ssl_ciphers DEFAULT@SECLEVEL=0;
     
     location / { 
-        default_type text/html;
+        add_header Content-Type text/html;
         return 200 '<h1>FortiGate Appliance</h1><p>System Online. Secure Connection Established.</p>'; 
     }
 }
