@@ -32,9 +32,10 @@ openssl x509 -req -in valido.csr -CA interCA.crt -CAkey interCA.key -CAcreateser
 cat valido.crt interCA.crt > valido_fullchain.pem
 
 # --- D. ESCENARIO CLAVE DÉBIL (forti.lab) ---
-# 1. Generamos una clave ridículamente pequeña (512 bits)
+# 1. Generamos una clave ridículamente pequeña (1024 bits)
 #    Esto simula una clave antigua o generada en un dispositivo IoT limitado.
-openssl genrsa -out forti.key 512
+#    (Nota: 512 bits es rechazado por Firefox, usamos 1024 para compatibilidad)
+openssl genrsa -out forti.key 1024
 
 # 2. Generamos el certificado firmado por nuestra CA
 openssl req -new -key forti.key -out forti.csr -subj "/CN=forti.lab"
