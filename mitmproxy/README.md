@@ -19,7 +19,7 @@ Este repositorio contiene un escenario completo y listo para usar que permite re
 ## ✨ Características
 
 - 🔍 **Captura de tráfico HTTP/HTTPS** con interfaz web intuitiva (mitmweb)
-- 🦊 **Firefox preconfigurado** con proxy automático y acceso vía navegador (noVNC)
+- 🦊 **Firefox preconfigurado** con proxy automático (sin intervención del usuario) y acceso vía navegador (noVNC)
 - 📦 **Sin instalación** de software adicional (todo en contenedores Docker)
 - 💾 **Persistencia** de certificados CA y configuración de Firefox
 - 🔧 **Addons personalizados** para logging, detección de credenciales y modificación de tráfico
@@ -107,6 +107,7 @@ Una vez iniciados los contenedores, puedes acceder a:
 
 1. **Acceder a Firefox**: Abre http://localhost:5800 en tu navegador
 2. **Navegar**: En el Firefox del contenedor, navega a cualquier sitio web
+   > **Nota**: El proxy ya está configurado automáticamente en Firefox mediante políticas de empresa. **No necesitas realizar ninguna configuración manual de red** en el navegador.
 3. **Analizar**: Abre http://localhost:8081 para ver el tráfico capturado en tiempo real
 4. **Exportar**: Usa los scripts o la interfaz de mitmweb para exportar los flujos
 
