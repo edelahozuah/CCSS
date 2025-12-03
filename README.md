@@ -1,3 +1,5 @@
+![Logo](img/logo.png)
+
 # Escenarios de Comunicaciones Seguras (CCSS)
 
 Este repositorio contiene una colección de escenarios prácticos relacionados con Infraestructura de Clave Pública (PKI) y seguridad de redes para la asignatura **Comunicaciones Seguras** del **Máster Universitario en Ciberseguridad** de la **Universidad de Alcalá**.
