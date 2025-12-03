@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # --- 1. SERVIDOR WEB ---
+  web-pki:
+    build: .
+    hostname: web-server
+    container_name: lab-web-pki
+    networks:
+      pki-net:
+        ipv4_address: 10.60.0.10 # <--- CAMBIO AQUÍ
+    volumes:
+      - ./shared:/shared_certs
+
+  # --- 2. SERVIDOR DNS ---
+  dns-attacker:
+    image: jpillora/dnsmasq
+    container_name: lab-dns
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    networks:
+      pki-net:
+        ipv4_address: 10.60.0.5 # <--- CAMBIO AQUÍ
+    ports:
+      - "53:53/udp"
+
+  # --- 3. MITMPROXY ---
+  attacker-mitm:
+    image: mitmproxy/mitmproxy
+    container_name: lab-mitm
+    command: mitmweb --web-host 0.0.0.0 --listen-port 8080
+    volumes:
+      - ./mitm-data:/home/mitmproxy/.mitmproxy
+    ports:
+      - "8081:8081"
+    networks:
+      pki-net:
+        ipv4_address: 10.60.0.20 # <--- CAMBIO AQUÍ
+
+  # --- 4. CLIENTE GRÁFICO ---
+  gui-client:
+    image: lscr.io/linuxserver/firefox:latest
+    container_name: lab-firefox
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - TITLE=PKI Lab - Firefox
+    volumes:
+      - ./shared:/config/Downloads
+      - ./mitm-data:/config/Downloads/mitm-certs
+    ports:
+      - "3000:3000"
+    dns:
+      - 10.60.0.5 # <--- CAMBIO AQUÍ (Debe apuntar a dns-attacker)
+    shm_size: "1gb"
+    networks:
+      - pki-net
+    depends_on:
+      - web-pki
+      - dns-attacker
+
+networks:
+  pki-net:
+    driver: bridge
+    ipam:
+      config:
+        # Definimos el nuevo rango de red
+        - subnet: 10.60.0.0/24 # <--- CAMBIO AQUÍ

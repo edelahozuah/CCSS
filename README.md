@@ -15,6 +15,7 @@ A continuación se describen brevemente los escenarios incluidos:
 | [**mitmproxy**](./mitmproxy) | Escenarios de interceptación de tráfico y ataques Man-in-the-Middle utilizando mitmproxy. |
 | [**pki-lab**](./pki-lab) | Laboratorio completo de despliegue y gestión de una PKI. |
 | [**pki-lab-simple**](./pki-lab-simple) | Versión simplificada del laboratorio de PKI para conceptos introductorios. |
+| [**pki-badkeys**](./pki-badkeys) | Escenario específico para la detección de claves débiles (Fortinet Leak). |
 | [**superfish**](./superfish) | Recreación de la vulnerabilidad Superfish (intercepción SSL/TLS mediante CA raíz comprometida). |
 | [**certificate-transparency**](./certificate-transparency) | Recursos relacionados con la transparencia de certificados. |
 | [**test_pki**](./test_pki) | Directorio de pruebas para configuraciones de PKI. |
