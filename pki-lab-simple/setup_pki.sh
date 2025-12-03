@@ -60,33 +60,6 @@ AoGAY/2iBv7iKy9Y28Hw2fK2T5/NMOQfFL8Oa0w0sD4cQZ/q84+63683VSCW46bT
 n01247CmnCGLv47OvbG26N6aX5XFkMv/TmfX5vM4lYCR5w3o8l6O42hmnlTptO6a
 gS4w+oHHy3w+zSsxVPOKPCqQcvdDvvVvv/PtOJ+U103jT8ECQQD1X06sX6p/s2gC
 m0K9+6Zt2rP/ToxuN24v1F5O4+OJM3i61zPPVQM+0Aoh1y6nCgDVB2vOIO5C6K20
-# --- D. ESCENARIO CLAVE DÉBIL (forti.lab) ---
-# 1. Generamos una clave ridículamente pequeña (1024 bits)
-#    Esto simula una clave antigua o generada en un dispositivo IoT limitado.
-#    (Nota: 512 bits es rechazado por Firefox, usamos 1024 para compatibilidad)
-openssl genrsa -out forti.key 1024
-
-# 2. Generamos el certificado firmado por nuestra CA
-openssl req -new -key forti.key -out forti.csr -subj "/CN=forti.lab"
-echo "subjectAltName=DNS:forti.lab" > l.ext
-openssl x509 -req -in forti.csr -CA interCA.crt -CAkey interCA.key -CAcreateserial \
-    -out forti.crt -days 365 -sha256 -extfile l.ext
-cat forti.crt interCA.crt > forti_fullchain.pem
-
-# 3. SIMULACIÓN DE "BADKEYS" / DATABASE LEAK
-# Vamos a calcular el Hash del Módulo de esta clave (su "huella dactilar" matemática)
-# y guardaremos la Clave Privada en un archivo público simulando una filtración.
-
-MODULUS_HASH=$(openssl rsa -in forti.key -modulus -noout | openssl md5 | awk '{print $2}')
-
-# Creamos el archivo "darkweb_db.txt" en la carpeta compartida
-echo "--- BASE DE DATOS DE CLAVES COMPROMETIDAS (LEAK 2024) ---" > /shared_certs/darkweb_db.txt
-echo "ID: a1b2c3d4... [REDACTED]" >> /shared_certs/darkweb_db.txt
-echo "ID: $MODULUS_HASH KEY:" >> /shared_certs/darkweb_db.txt
-# Volcamos la clave privada en una sola línea (base64) para que sea "recuperable"
-cat forti.key | grep -v "-" | tr -d '\n' >> /shared_certs/darkweb_db.txt
-echo "" >> /shared_certs/darkweb_db.txt
-
 echo "--- [4/4] Configurando NGINX ---"
 cat > /etc/nginx/conf.d/default.conf <<EOF
 server {
@@ -118,19 +91,6 @@ server {
     location / { 
         add_header Content-Type text/html;
         return 200 '<h1>Error de Cadena</h1><p>Soy roto.lab y falta la CA intermedia.</p>'; 
-    }
-}
-
-server {
-    listen 443 ssl;
-    server_name forti.lab;
-    ssl_certificate /etc/nginx/certs/forti_fullchain.pem;
-    ssl_certificate_key /etc/nginx/certs/forti.key;
-    # Forzamos cifrados débiles para que sea más realista (opcional)
-    ssl_ciphers DEFAULT@SECLEVEL=0;
-    location / { 
-        add_header Content-Type text/html;
-        return 200 '<h1>Legacy System</h1><p>Running on RSA 1024 bit key.</p>'; 
     }
 }
 EOF

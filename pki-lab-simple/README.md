@@ -19,7 +19,6 @@ El servidor web está configurado para responder a los siguientes dominios, cada
 | :--- | :--- |
 | **`https://valido.lab`** | **Configuración Correcta**. El servidor envía el certificado final y la cadena completa (CA Intermedia). El navegador debería confiar en él si se importa la Root CA. |
 | **`https://roto.lab`** | **Cadena Incompleta**. El servidor envía solo su certificado final, olvidando la CA Intermedia. Esto provoca el error `SEC_ERROR_UNKNOWN_ISSUER` en muchos clientes. |
-| **`https://forti.lab`** | **Clave Comprometida**. Utiliza una clave expuesta: un atacante podría derivar la clave privada a partir de la pública. (Ver ejercicio `badkeys`). |
 | **`https://banco-seguro.com`** | **Phishing / Nombre Incorrecto**. El servidor presenta un certificado válido pero para un dominio diferente, o autofirmado por una CA no confiable. |
 
 ## Instrucciones de Uso
@@ -44,8 +43,6 @@ Para que los ejercicios funcionen como se espera, primero debes confiar en la "A
 ### 4. Realizar Pruebas
 Navega a los diferentes dominios (`https://valido.lab`, `https://roto.lab`, etc.) y observa cómo reacciona el navegador.
 
-## Ejercicios Adicionales
-*   **Badkeys**: Revisa la carpeta `badkeys/` para un ejercicio sobre detección de claves comprometidas.
 
 ---
 *Nota: Para la elaboración de este contenido se han utilizado herramientas de IA, con un nivel 3, de acuerdo con la escala [AI Assessment Scale](https://aiassessmentscale.com/).*
