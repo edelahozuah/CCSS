@@ -80,6 +80,8 @@ server {
     server_name forti.lab;
     ssl_certificate /etc/nginx/certs/forti_fullchain.pem;
     ssl_certificate_key /etc/nginx/certs/forti.key;
+    # Forzamos cifrados débiles para que sea más realista (opcional)
+    ssl_ciphers DEFAULT@SECLEVEL=0;
     
     location / { 
         return 200 '<h1>FortiGate Appliance</h1><p>System Online. Secure Connection Established.</p>'; 
