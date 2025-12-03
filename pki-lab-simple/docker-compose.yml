@@ -8,19 +8,19 @@ services:
     container_name: lab-web-pki
     networks:
       pki-net:
-        ipv4_address: 10.50.0.10  # <--- CAMBIO AQUÍ
+        ipv4_address: 10.50.0.10 # <--- CAMBIO AQUÍ
     volumes:
       - ./shared:/shared_certs
 
   # --- 2. SERVIDOR DNS ---
   dns-attacker:
-    image: jpillora/dnsmasq
+    image: 4km3/dnsmasq:2.85-r2
     container_name: lab-dns
     volumes:
       - ./dnsmasq.conf:/etc/dnsmasq.conf
     networks:
       pki-net:
-        ipv4_address: 10.50.0.5   # <--- CAMBIO AQUÍ
+        ipv4_address: 10.50.0.5 # <--- CAMBIO AQUÍ
     ports:
       - "53:53/udp"
 
@@ -35,7 +35,7 @@ services:
       - "8081:8081"
     networks:
       pki-net:
-        ipv4_address: 10.50.0.20  # <--- CAMBIO AQUÍ
+        ipv4_address: 10.50.0.20 # <--- CAMBIO AQUÍ
 
   # --- 4. CLIENTE GRÁFICO ---
   gui-client:
@@ -54,7 +54,7 @@ services:
     ports:
       - "3000:3000"
     dns:
-      - 10.50.0.5  # <--- CAMBIO AQUÍ (Debe apuntar a dns-attacker)
+      - 10.50.0.5 # <--- CAMBIO AQUÍ (Debe apuntar a dns-attacker)
     shm_size: "1gb"
     networks:
       - pki-net
@@ -68,4 +68,4 @@ networks:
     ipam:
       config:
         # Definimos el nuevo rango de red
-        - subnet: 10.50.0.0/24  # <--- CAMBIO AQUÍ
+        - subnet: 10.50.0.0/24 # <--- CAMBIO AQUÍ
