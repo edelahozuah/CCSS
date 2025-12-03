@@ -1,0 +1,15 @@
+{
+  "policies": {
+    "Proxy": {
+      "Mode": "manual",
+      "HTTPProxy": "mitmproxy:8080",
+      "SSLProxy": "mitmproxy:8080",
+      "UseHTTPProxyForAllProtocols": true
+    },
+    "Homepage": {
+      "URL": "http://mitm.it",
+      "Locked": false,
+      "StartPage": "homepage"
+    }
+  }
+}

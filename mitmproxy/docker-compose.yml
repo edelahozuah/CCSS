@@ -30,6 +30,8 @@ services:
     volumes:
       # Perfil de Firefox persistente (configuración de proxy y certificado CA)
       - ./firefox-config:/config:rw
+      # Políticas de empresa (Proxy automático)
+      - ./policies.json:/usr/lib/firefox/distribution/policies.json:ro
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - DISPLAY_WIDTH=1920
